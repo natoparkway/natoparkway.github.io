@@ -7,7 +7,7 @@ var force = d3.layout.force()
     .size([width, height])
     .on("tick", tick);
 
-var svg = d3.select("body").append("svg")
+var svg = d3.select("body").select("svg")
     .attr("width", width)
     .attr("height", height);
 
@@ -52,14 +52,16 @@ function update() {
       .attr("cx", function(d) { return d.x; })
       .attr("cy", function(d) { return d.y; })
       .attr("r", size)
-      .style("fill", color)
+      .style("fill", color)       // this code works OK
       .on("click", click)
-        .append("defs")
-          .append("pattern")
-          .attr("id", function(d) { return d.name.replace(" ", "-") + "-node"})
-            .append("image")
-              .attr("xlink:href", "Matt_GoldenGate_Picture_Small.jpg");
-
+      .on("mouseover", function(){ // when I use .style("fill", "red") here, it works 
+        d3.select(this)
+          .style("fill", "url(#img1)");
+     })
+      .on("mouseout", function(){ 
+        d3.select(this)
+          .style("fill", color);
+     });
 }
 
 function linkDistance(node) {
@@ -103,5 +105,3 @@ function tick() {
 function color(d) {
   return d._children ? "#3182bd" : d.children ? "#c6dbef" : "#fd8d3c";
 }
-
-// Returns a list of all nodes under the root.

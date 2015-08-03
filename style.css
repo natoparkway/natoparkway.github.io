@@ -10,7 +10,6 @@
   stroke-width: 1.5px;
 }
 
-#Home-node {
-	background-image = url("Matt_GoldenGate_Picture_Small.jpg");
-	stroke-width: 10px;
+image {
+	border-radius: 50%;
 }
