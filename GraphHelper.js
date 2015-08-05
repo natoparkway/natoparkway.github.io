@@ -1,8 +1,12 @@
 var GraphHelper = (function () {
 
 	function countChildren(node) {
+		return Math.max(countShownChildren(node), countHiddenChildren(node));
+	}
+
+	function countShownChildren(node) {
 	  if (!node.children) return 1;
-	  var numChildren = 0
+	  var numChildren = 0;
 
 	  node.children.forEach(function(child) {
 	    numChildren += countChildren(child);
@@ -26,8 +30,8 @@ var GraphHelper = (function () {
 		return countChildren(node) * -1000;
 	}
 
-	var size = function(node) {
-		return countChildren(node) * 10;
+	var circleSize = function(node) {
+		return countChildren(node) * 30;
 	}
 
 	var flatten = function(root) {
@@ -42,14 +46,27 @@ var GraphHelper = (function () {
 	}
 
 	var linkDistance = function(node) {
-		return countChildren(node) * 30;
+		return countChildren(node.source) * 50;
+	}
+
+	var titlePositionX = function(node) {
+		var text = node.name;
+		return -0.5 * Utils.getTextMetrics(text).width;
+	}
+
+	var titlePositionY = function(node) {
+		var text = node.name;
+		console.log(Utils.getTextMetrics(text).height);
+		return 0.5 * Utils.getTextMetrics(text).height;
 	}
   
   return {
     flatten: flatten,
     charge: charge,
-    size: size,
-    linkDistance: linkDistance
+    circleSize: circleSize,
+    linkDistance: linkDistance,
+    titlePositionX: titlePositionX,
+    titlePositionY: titlePositionY
   };
 
 })();

@@ -1,4 +1,4 @@
-.node {
+.circle {
   cursor: pointer;
   stroke: #3182bd;
   stroke-width: 1.5px;
@@ -10,6 +10,8 @@
   stroke-width: 1.5px;
 }
 
-image {
-	border-radius: 50%;
+.title {
+	font: Junction;
+	color: #FF0000;
+	font-size: 36px;
 }

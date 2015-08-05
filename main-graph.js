@@ -7,75 +7,67 @@ var force = d3.layout.force()
     .size([width, height])
     .on("tick", tick);
 
-var svg = d3.select("body").select("svg")
+var svg = d3.select(("svg"))
     .attr("width", width)
     .attr("height", height);
 
-var link = svg.selectAll(".link");
-var node = svg.selectAll(".node");
+var links = svg.selectAll(".link");
+var nodes = svg.selectAll(".node");
 
-d3.json("readme.json", function(json) {
+
+d3.json("data.json", function(json) {
   root = json;
   update();
 });
 
 function update() {
-  var nodes = GraphHelper.flatten(root),
-      links = d3.layout.tree().links(nodes);
+  var nodeData = GraphHelper.flatten(root),
+      linkData = d3.layout.tree().links(nodeData);
 
   force
-      .nodes(nodes)
-      .links(links)
-      .linkDistance(linkDistance)
-      .charge(charge)
+      .nodes(nodeData)
+      .links(linkData)
+      .linkDistance(GraphHelper.linkDistance)
+      .charge(GraphHelper.charge)
       .start();
 
-    // Update the links…
-  link = link.data(links, function(d) { return d.target.id; });
+  links = links.data(linkData, function(d) { return d.target.id; });
   // Exit any old links.
-  link.exit().remove();
+  links.exit().remove();
   // Enter any new links.
-  link.enter().insert("line", ".node")
+  links.enter().insert("line", ".node")
       .attr("class", "link")
       .attr("x1", function(d) { return d.source.x; })
       .attr("y1", function(d) { return d.source.y; })
       .attr("x2", function(d) { return d.target.x; })
       .attr("y2", function(d) { return d.target.y; });
-  
-  // Update the nodes…
-  node = node.data(nodes, function(d) { return d.id; }).style("fill", color);
-  // Exit any old nodes.
-  node.exit().remove();
-  // Enter any new nodes.
-  node.enter().append("circle")
+
+  nodes = nodes.data(nodeData, function(d) { return d.id; })
+      .style("fill", color);
+
+  nodes.exit().remove();
+
+  var groupsAdded = nodes.enter().append("g")
       .attr("class", "node")
-      .attr("cx", function(d) { return d.x; })
-      .attr("cy", function(d) { return d.y; })
-      .attr("r", size)
-      .style("fill", color)       // this code works OK
-      .on("click", click)
-      .on("mouseover", function(){ // when I use .style("fill", "red") here, it works 
-        d3.select(this)
-          .style("fill", "url(#img1)");
-     })
-      .on("mouseout", function(){ 
-        d3.select(this)
-          .style("fill", color);
-     });
+      .call(force.drag);
+
+  groupsAdded.append("circle")
+      .attr("class", "circle")
+      .attr("cx", function(d) { return 0; })
+      .attr("cy", function(d) { return 0; })
+      .attr("r", GraphHelper.circleSize)
+      .style("fill", color)
+      .on("click", click);
+
+  groupsAdded.append("text")
+      .attr("class", "title")
+      .attr("dx", GraphHelper.titlePositionX)
+      .attr("dy", GraphHelper.titlePositionY)
+      .text(function(d) { return d.name });
+
 }
 
-function linkDistance(node) {
-  return GraphHelper.linkDistance(node.source);
-}
 
-function charge(node) {
-  return GraphHelper.charge(node);
-}
-
-//Returns size
-function size(node) {
-  return GraphHelper.size(node);
-}
 
 // Toggle children on click.
 function click(node) {
@@ -92,16 +84,25 @@ function click(node) {
 }
 
 function tick() {
-  link.attr("x1", function(d) { return d.source.x; })
+  links.attr("x1", function(d) { return d.source.x; })
       .attr("y1", function(d) { return d.source.y; })
       .attr("x2", function(d) { return d.target.x; })
       .attr("y2", function(d) { return d.target.y; });
 
-  node.attr("cx", function(d) { return d.x; })
+  nodes.attr("cx", function(d) { return d.x; })
       .attr("cy", function(d) { return d.y; });
+
+  nodes.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; }); 
 }
 
 // Color leaf nodes orange, and packages white or blue.
 function color(d) {
   return d._children ? "#3182bd" : d.children ? "#c6dbef" : "#fd8d3c";
 }
+
+function pickImage(node) {
+  if (node.name == 'Home') return "url(#image)";
+  return color(node);
+}
+
+
