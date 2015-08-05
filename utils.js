@@ -1,6 +1,6 @@
 Utils = (function () {
 	function getTextMetrics(text) {
-	    // re-use canvas object for better performance
+	    // reuse canvas object for better performance
 	    var canvas = getTextMetrics.canvas || (getTextMetrics.canvas = document.createElement("canvas"));
 	    var context = canvas.getContext("2d");
 	    context.font = "36px Junction";
