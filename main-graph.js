@@ -1,6 +1,6 @@
 //Constants
-var width = 960;
-var height = 500;
+var width = 1000;
+var height = 1000;
 var root;
 
 var force = d3.layout.force()
@@ -17,12 +17,15 @@ var nodes = svg.selectAll(".node");
 
 d3.json("data.json", function(json) {
   root = json;
-  update();
+  update()
+  click(root)
 });
 
 function update() {
   var nodeData = GraphHelper.flatten(root),
       linkData = d3.layout.tree().links(nodeData);
+
+  console.log(nodeData);
 
   force
       .nodes(nodeData)
@@ -48,21 +51,21 @@ function update() {
   nodes.exit().remove();
 
   var groupsAdded = nodes.enter().append("g")
-      .attr("class", "node")
-      .call(force.drag);
+      .style("fill", color)
+      .attr("class", "node");
 
   groupsAdded.append("circle")
       .attr("class", "circle")
       .attr("cx", function(d) { return 0; })
       .attr("cy", function(d) { return 0; })
       .attr("r", GraphHelper.circleSize)
-      .style("fill", color)
       .on("click", click);
 
   groupsAdded.append("text")
       .attr("class", "title")
       .attr("dx", GraphHelper.titlePositionX)
       .attr("dy", GraphHelper.titlePositionY)
+      .style("fill", "black")
       .text(function(d) { return d.name });
 
 }

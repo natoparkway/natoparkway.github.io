@@ -56,7 +56,6 @@ var GraphHelper = (function () {
 
 	var titlePositionY = function(node) {
 		var text = node.name;
-		console.log(Utils.getTextMetrics(text).height);
 		return 0.5 * Utils.getTextMetrics(text).height;
 	}
   
